@@ -1,0 +1,31 @@
+{
+  "playlists": [
+    {
+      "id": "123",
+      "title": "1",
+      "description": "1"
+    },
+    {
+      "id": "0.15792808950640147",
+      "title": "andy chiu",
+      "description": "2",
+      "songs": []
+    }
+  ],
+  "songs": {
+    "123": [
+      {
+        "id": "some_unique_song_id",
+        "songName": "crazy",
+        "singer": "KINGGUE",
+        "link": "https://google.com"
+      },
+      {
+        "id": "abc",
+        "songName": "crazy",
+        "singer": "KINGGUE",
+        "link": "https://google.com"
+      }
+    ]
+  }
+}
