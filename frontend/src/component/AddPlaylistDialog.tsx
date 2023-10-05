@@ -25,9 +25,10 @@ export default function FormDialog({
   const [titleErr, setTitleErr] = useState(false);
   const [discriptionErr, setDiscriptionErr] = useState(false);
 
-  const handleCreate = (title: string, description: string) => {
+  const handleCreate = async (title: string, description: string) => {
     if (!title) {
       setTitleErr(true);
+      alert("Please enter a title!");
       return;
       // early return
     } else {
@@ -35,11 +36,33 @@ export default function FormDialog({
     }
     if (!description) {
       setDiscriptionErr(true);
+      alert("Please enter a description!");
       return;
       // early return
     } else {
       setTitleErr(false);
     }
+
+    try {
+      const response = await fetch("http://localhost:5000/playlists");
+      const playlists = await response.json();
+
+      const titleExists = playlists.some(
+        (playlist: any) => playlist.title === title,
+      );
+
+      if (titleExists) {
+        alert(
+          "A playlist with this title already exists. Please choose a different title.",
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("Error fetching playlists:", error);
+      alert("Error checking playlist titles. Please try again.");
+      return;
+    }
+
     const newPlaylist = {
       id: String(Math.random()),
       title: title,

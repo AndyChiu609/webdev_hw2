@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -8,7 +9,6 @@ import CloseIcon from "@mui/icons-material/Close";
 
 type PlaylistCardProps = {
   title: string;
-  description: string;
   image: string;
   id: string;
   deleteMode: boolean;
@@ -17,13 +17,32 @@ type PlaylistCardProps = {
 
 export default function PlaylistCard({
   title,
-  description,
   image,
   id,
   deleteMode,
   onDelete,
 }: PlaylistCardProps) {
   const navigate = useNavigate();
+  const [songCount, setSongCount] = useState<number>(0);
+
+  // Function to fetch and count songs for the playlist
+  const fetchAndCountSongs = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/songs?playlistId=${id}`);
+      if (response.ok) {
+        const songs = await response.json();
+        setSongCount(songs.length);
+      } else {
+        console.error("Failed to fetch songs:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching songs:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAndCountSongs();
+  }, [id]);
 
   return (
     <Card sx={{ maxWidth: 345, position: "relative" }}>
@@ -52,7 +71,7 @@ export default function PlaylistCard({
             {title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {description}
+            Song count: {songCount}
           </Typography>
         </CardContent>
       </CardActionArea>

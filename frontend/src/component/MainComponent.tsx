@@ -1,4 +1,3 @@
-//import HeadBar from "./HeadBar";
 import AddPlayListDialog from "./AddPlaylistDialog";
 import PlaylistCard from "./PlayListCard";
 import image from "../public/image.png";
@@ -8,13 +7,12 @@ import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
 import "../App.css";
-import { Test } from "./Test";
 
 type playlist = {
   id: string;
   title: string;
-  description: string; // Add this line
-  songs: [];
+  description: string;
+  songs: any[]; // change this if you have a specific structure in mind
 };
 
 function MainComponent() {
@@ -34,11 +32,16 @@ function MainComponent() {
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`http://localhost:5000/playlists/${id}`, {
+      const response = await fetch(`http://localhost:5000/playlists/${id}`, {
         method: "DELETE",
       });
-      // After deletion, refresh the list
-      fetchPlaylists();
+
+      if (response.ok) {
+        // Instead of fetching the entire list again, remove the deleted item from the state.
+        setPlaylists((prev) => prev.filter((playlist) => playlist.id !== id));
+      } else {
+        console.error("Error deleting playlist:", await response.text());
+      }
     } catch (error) {
       console.error("Error deleting playlist:", error);
     }
@@ -79,7 +82,6 @@ function MainComponent() {
           </Button>
         </Box>
 
-        <Test enableClick={true} />
         {playlists.map((playlist) => (
           <PlaylistCard
             key={playlist.id}

@@ -1,31 +1,45 @@
 {
   "playlists": [
     {
-      "id": "123",
+      "id": "456",
       "title": "1",
       "description": "1"
     },
     {
-      "id": "0.15792808950640147",
-      "title": "andy chiu",
+      "id": "0.81846797316858",
+      "title": "2",
       "description": "2",
       "songs": []
     }
   ],
-  "songs": {
-    "123": [
-      {
-        "id": "some_unique_song_id",
-        "songName": "crazy",
-        "singer": "KINGGUE",
-        "link": "https://google.com"
-      },
-      {
-        "id": "abc",
-        "songName": "crazy",
-        "singer": "KINGGUE",
-        "link": "https://google.com"
-      }
-    ]
-  }
+  "songs": [
+    {
+      "songName": "1",
+      "singer": "1",
+      "link": "1",
+      "playlistId": "456",
+      "id": "0.43955669275667253"
+    },
+    {
+      "songName": "2",
+      "singer": "1",
+      "link": "1",
+      "playlistId": "456",
+      "id": "0.12939436515861624"
+    },
+    {
+      "songName": "1",
+      "singer": "1",
+      "link": "1",
+      "playlistId": "0.81846797316858",
+      "id": "0.2589691332871602"
+    },
+    {
+      "songName": "2",
+      "singer": "1",
+      "link": "1",
+      "playlistId": "0.81846797316858",
+      "id": "0.6809914695044201"
+    }
+  ]
 }
