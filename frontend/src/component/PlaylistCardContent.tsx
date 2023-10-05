@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import image from "../public/image.png";
 import SongsTable from "./SongsTable";
 import AddSongDialog from "./AddSongDialog";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog"; // Import the DeleteConfirmationDialog component
 import { Button } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import {
@@ -22,7 +23,7 @@ type Playlist = {
   description: string;
 };
 
-type Song = {
+export type Song = {
   id: string;
   songName: string;
   singer: string;
@@ -37,13 +38,16 @@ function PlaylistCardContent() {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const handleAddDialogOpen = () => setAddDialogOpen(true);
   const handleAddDialogClose = () => setAddDialogOpen(false);
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false); // State for "Copy to Other Playlist" dialog
-  const [playlists, setPlaylists] = useState<Playlist[]>([]); // State to store existing playlists
-  const [selectedPlaylist, setSelectedPlaylist] = useState(""); // State to store selected playlist for copying
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [selectedPlaylist, setSelectedPlaylist] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation dialog
+  const [selectedSongsForDeletion, setSelectedSongsForDeletion] = useState<Song[]>(
+    []
+  );
 
   const handleCopyDialogOpen = () => {
     if (selected.length > 0) {
-      // Open the "Copy to Other Playlist" dialog only when songs are selected
       setCopyDialogOpen(true);
     }
   };
@@ -51,6 +55,23 @@ function PlaylistCardContent() {
   const handleCopyDialogClose = () => setCopyDialogOpen(false);
 
   const handleDeleteSelectedSongs = async () => {
+    if (selected.length > 0) {
+      // Create an array of selected songs
+      const selectedSongsArray = songs.filter((song) =>
+        selected.includes(song.id)
+      );
+      setSelectedSongsForDeletion(selectedSongsArray); // Update the state
+      setDeleteDialogOpen(true); // Open the delete confirmation dialog
+    } else {
+      alert("请勾选歌曲");
+    }
+  };
+
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteConfirmed = async () => {
     const failedDeletes: string[] = [];
 
     for (const songId of selected) {
@@ -71,9 +92,10 @@ function PlaylistCardContent() {
 
     if (failedDeletes.length === 0) {
       setSongs((prevSongs) =>
-        prevSongs.filter((song) => !selected.includes(song.id)),
+        prevSongs.filter((song) => !selected.includes(song.id))
       );
       setSelected([]);
+      handleDeleteDialogClose(); // Close the delete confirmation dialog after successful deletes
     } else {
       console.error("Failed to delete some songs:", failedDeletes);
     }
@@ -121,11 +143,10 @@ function PlaylistCardContent() {
           const copiedSong = {
             ...song,
             playlistId: selectedPlaylist,
-            id: String(Math.random()), // Generate a new ID for the copied song
+            id: String(Math.random()),
           };
 
           try {
-            // Send a POST request to create a new song with the copied data
             const response = await fetch(`http://localhost:5000/songs`, {
               method: "POST",
               headers: {
@@ -145,7 +166,7 @@ function PlaylistCardContent() {
       }
 
       if (failedCopies.length === 0) {
-        handleCopyDialogClose(); // Close the dialog after successful copies
+        handleCopyDialogClose();
       } else {
         console.error("Failed to copy some songs:", failedCopies);
       }
@@ -153,10 +174,6 @@ function PlaylistCardContent() {
       console.error("Error copying songs:", error);
     }
   };
-
-  // const handleSaveEdit = () => {
-  //   getSongsForPlaylist(); // Refresh songs after edit.
-  // };
 
   useEffect(() => {
     fetch(`http://localhost:5000/playlists/${id}`)
@@ -166,7 +183,6 @@ function PlaylistCardContent() {
 
     getSongsForPlaylist();
 
-    // Fetch existing playlists when the component mounts
     fetch("http://localhost:5000/playlists")
       .then((response) => response.json())
       .then((data) => setPlaylists(data))
@@ -213,7 +229,6 @@ function PlaylistCardContent() {
             variant="contained"
             color="secondary"
             onClick={handleDeleteSelectedSongs}
-            disabled={selected.length === 0}
           >
             Delete Selected Songs
           </Button>
@@ -224,7 +239,7 @@ function PlaylistCardContent() {
         isOpen={addDialogOpen}
         onClose={handleAddDialogClose}
         onSongAdded={getSongsForPlaylist}
-        playlistId={id || ""} // <-- Pass the playlist id here
+        playlistId={id || ""}
       />
 
       <Dialog open={copyDialogOpen} onClose={handleCopyDialogClose}>
@@ -249,6 +264,14 @@ function PlaylistCardContent() {
           <Button onClick={handleCopyToPlaylist}>Copy</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Render the DeleteConfirmationDialog */}
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteDialogClose}
+        onDeleteConfirmed={handleDeleteConfirmed}
+        selectedSongs={selectedSongsForDeletion} // Pass the selected songs for deletion
+      />
 
       <SongsTable
         songs={songs}
