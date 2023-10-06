@@ -23,10 +23,10 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
 }) => {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>确认删除</DialogTitle>
+      <DialogTitle>確認刪除</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          确定要删除以下歌曲吗？
+          確定要删除以下歌曲嗎？
           <ul>
             {selectedSongs.map((song) => (
               <li key={song.id}>
@@ -41,7 +41,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
           取消
         </Button>
         <Button onClick={onDeleteConfirmed} color="primary">
-          确定删除
+          確定刪除
         </Button>
       </DialogActions>
     </Dialog>

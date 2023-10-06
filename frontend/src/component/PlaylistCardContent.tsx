@@ -15,6 +15,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  TextField,
 } from "@mui/material";
 
 type Playlist = {
@@ -45,10 +46,55 @@ function PlaylistCardContent() {
   const [selectedSongsForDeletion, setSelectedSongsForDeletion] = useState<Song[]>(
     []
   );
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
 
   const handleCopyDialogOpen = () => {
     if (selected.length > 0) {
       setCopyDialogOpen(true);
+    }
+  };
+
+  const handleEditDialogOpen = () => {
+    if (playlist) {
+      setEditedTitle(playlist.title);
+      setEditedDescription(playlist.description);
+      setEditDialogOpen(true);
+    }
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      // Send a PUT request to update the title and description
+      const response = await fetch(`http://localhost:5000/playlists/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: editedTitle,
+          description: editedDescription,
+        }),
+      });
+
+      if (response.ok) {
+        setPlaylist((prevPlaylist) => ({
+          ...prevPlaylist!,
+          title: editedTitle,
+          description: editedDescription,
+          id: prevPlaylist?.id || '', // Provide a default value here if id is undefined
+        }));
+        handleEditDialogClose(); // Close the edit dialog after successful update
+      } else {
+        console.error("Failed to update playlist data");
+      }
+    } catch (error) {
+      console.error("Error updating playlist:", error);
     }
   };
 
@@ -232,6 +278,13 @@ function PlaylistCardContent() {
           >
             Delete Selected Songs
           </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleEditDialogOpen} // Add this line to open the edit dialog
+          >
+            Edit Title and Description
+          </Button>
         </div>
       </div>
 
@@ -280,6 +333,30 @@ function PlaylistCardContent() {
         handleSingleSelect={handleSingleSelect}
         onSongsUpdated={getSongsForPlaylist}
       />
+
+<Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
+        <DialogTitle>Edit Title and Description</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Title"
+            fullWidth
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+          />
+          <TextField
+            label="Description"
+            fullWidth
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditDialogClose}>Cancel</Button>
+          <Button onClick={handleSaveEdit} color="primary">
+            Save Edit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

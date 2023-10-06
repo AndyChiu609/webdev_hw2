@@ -1,46 +1,38 @@
 {
   "playlists": [
     {
-      "id": "0.3282316317247287",
-      "title": "邱辰安",
-      "description": "1",
-      "songs": []
+      "title": "油歌",
+      "description": "專門放動漫歌的歌單",
+      "id": "0.3282316317247287"
     },
     {
-      "id": "0.9165328477746131",
-      "title": "1",
-      "description": "1",
+      "id": "0.6179781627441854",
+      "title": "2",
+      "description": "2",
       "songs": []
     }
   ],
   "songs": [
     {
-      "songName": "2",
-      "singer": "1",
-      "link": "1",
-      "playlistId": "0.9165328477746131",
-      "id": "0.23051609720880517"
-    },
-    {
-      "songName": "3",
-      "singer": "1",
-      "link": "1",
-      "playlistId": "0.9165328477746131",
-      "id": "0.1339515057539966"
-    },
-    {
-      "songName": "2",
-      "singer": "1",
-      "link": "1",
+      "songName": "檔案歌",
+      "singer": "檔案的歌手",
+      "link": "https://www.youtube.com/watch?v=w6SJPW6vW6s&list=PLjqqSIyv0xOkFFrysRHU7yycdID97UwIK&index=1",
       "playlistId": "0.3282316317247287",
       "id": "0.17069915841737027"
     },
     {
-      "songName": "3",
-      "singer": "1",
-      "link": "1",
-      "playlistId": "0.3282316317247287",
-      "id": "0.8177697489415068"
+      "songName": "GIVE ME CHOCO♡",
+      "singer": "檔案的歌手",
+      "link": "https://www.youtube.com/watch?v=w6SJPW6vW6s&list=PLjqqSIyv0xOkFFrysRHU7yycdID97UwIK&index=1",
+      "playlistId": "0.6179781627441854",
+      "id": "0.46695975984844273"
+    },
+    {
+      "songName": "special",
+      "singer": "kingnu",
+      "link": "https://www.youtube.com/watch?v=fhzKLBZJC3w",
+      "playlistId": "0.6179781627441854",
+      "id": "0.9319267348274218"
     }
   ]
 }
