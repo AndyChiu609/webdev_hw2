@@ -3,10 +3,9 @@ import { useState, useEffect } from "react";
 import image from "../public/image.png";
 import SongsTable from "./SongsTable";
 import AddSongDialog from "./AddSongDialog";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog"; // Import the DeleteConfirmationDialog component
-import { Button } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import {
+  Button,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -17,6 +16,7 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
 
 type Playlist = {
   id: string;
@@ -37,18 +37,19 @@ function PlaylistCardContent() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [selected, setSelected] = useState<readonly string[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const handleAddDialogOpen = () => setAddDialogOpen(true);
-  const handleAddDialogClose = () => setAddDialogOpen(false);
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState("");
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation dialog
-  const [selectedSongsForDeletion, setSelectedSongsForDeletion] = useState<Song[]>(
-    []
-  );
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedSongsForDeletion, setSelectedSongsForDeletion] = useState<
+    Song[]
+  >([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
+
+  const handleAddDialogOpen = () => setAddDialogOpen(true);
+  const handleAddDialogClose = () => setAddDialogOpen(false);
 
   const handleCopyDialogOpen = () => {
     if (selected.length > 0) {
@@ -64,13 +65,26 @@ function PlaylistCardContent() {
     }
   };
 
-  const handleEditDialogClose = () => {
-    setEditDialogOpen(false);
+  const handleEditDialogClose = () => setEditDialogOpen(false);
+
+  const handleCopyDialogClose = () => setCopyDialogOpen(false);
+
+  const handleDeleteSelectedSongs = async () => {
+    if (selected.length > 0) {
+      const selectedSongsArray = songs.filter((song) =>
+        selected.includes(song.id),
+      );
+      setSelectedSongsForDeletion(selectedSongsArray);
+      setDeleteDialogOpen(true);
+    } else {
+      alert("请勾选歌曲");
+    }
   };
+
+  const handleDeleteDialogClose = () => setDeleteDialogOpen(false);
 
   const handleSaveEdit = async () => {
     try {
-      // Send a PUT request to update the title and description
       const response = await fetch(`http://localhost:5000/playlists/${id}`, {
         method: "PUT",
         headers: {
@@ -87,34 +101,15 @@ function PlaylistCardContent() {
           ...prevPlaylist!,
           title: editedTitle,
           description: editedDescription,
-          id: prevPlaylist?.id || '', // Provide a default value here if id is undefined
+          id: prevPlaylist?.id || "",
         }));
-        handleEditDialogClose(); // Close the edit dialog after successful update
+        handleEditDialogClose();
       } else {
         console.error("Failed to update playlist data");
       }
     } catch (error) {
       console.error("Error updating playlist:", error);
     }
-  };
-
-  const handleCopyDialogClose = () => setCopyDialogOpen(false);
-
-  const handleDeleteSelectedSongs = async () => {
-    if (selected.length > 0) {
-      // Create an array of selected songs
-      const selectedSongsArray = songs.filter((song) =>
-        selected.includes(song.id)
-      );
-      setSelectedSongsForDeletion(selectedSongsArray); // Update the state
-      setDeleteDialogOpen(true); // Open the delete confirmation dialog
-    } else {
-      alert("请勾选歌曲");
-    }
-  };
-
-  const handleDeleteDialogClose = () => {
-    setDeleteDialogOpen(false);
   };
 
   const handleDeleteConfirmed = async () => {
@@ -138,10 +133,10 @@ function PlaylistCardContent() {
 
     if (failedDeletes.length === 0) {
       setSongs((prevSongs) =>
-        prevSongs.filter((song) => !selected.includes(song.id))
+        prevSongs.filter((song) => !selected.includes(song.id)),
       );
       setSelected([]);
-      handleDeleteDialogClose(); // Close the delete confirmation dialog after successful deletes
+      handleDeleteDialogClose();
     } else {
       console.error("Failed to delete some songs:", failedDeletes);
     }
@@ -151,9 +146,9 @@ function PlaylistCardContent() {
     if (event.target.checked) {
       const newSelected = songs.map((n) => n.id);
       setSelected(newSelected);
-      return;
+    } else {
+      setSelected([]);
     }
-    setSelected([]);
   };
 
   const handleSingleSelect = (
@@ -281,7 +276,7 @@ function PlaylistCardContent() {
           <Button
             variant="outlined"
             color="primary"
-            onClick={handleEditDialogOpen} // Add this line to open the edit dialog
+            onClick={handleEditDialogOpen}
           >
             Edit Title and Description
           </Button>
@@ -318,12 +313,11 @@ function PlaylistCardContent() {
         </DialogActions>
       </Dialog>
 
-      {/* Render the DeleteConfirmationDialog */}
       <DeleteConfirmationDialog
         open={deleteDialogOpen}
         onClose={handleDeleteDialogClose}
         onDeleteConfirmed={handleDeleteConfirmed}
-        selectedSongs={selectedSongsForDeletion} // Pass the selected songs for deletion
+        selectedSongs={selectedSongsForDeletion}
       />
 
       <SongsTable
@@ -334,7 +328,7 @@ function PlaylistCardContent() {
         onSongsUpdated={getSongsForPlaylist}
       />
 
-<Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
+      <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
         <DialogTitle>Edit Title and Description</DialogTitle>
         <DialogContent>
           <TextField

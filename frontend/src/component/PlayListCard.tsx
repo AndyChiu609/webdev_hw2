@@ -28,7 +28,9 @@ export default function PlaylistCard({
   // Function to fetch and count songs for the playlist
   const fetchAndCountSongs = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/songs?playlistId=${id}`);
+      const response = await fetch(
+        `http://localhost:5000/songs?playlistId=${id}`,
+      );
       if (response.ok) {
         const songs = await response.json();
         setSongCount(songs.length);

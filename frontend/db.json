@@ -1,8 +1,8 @@
 {
   "playlists": [
     {
-      "title": "油歌",
-      "description": "專門放動漫歌的歌單",
+      "title": "oil song",
+      "description": "anime songs",
       "id": "0.3282316317247287"
     },
     {
@@ -14,8 +14,8 @@
   ],
   "songs": [
     {
-      "songName": "檔案歌",
-      "singer": "檔案的歌手",
+      "songName": "blue archive song",
+      "singer": "some cute edm singer",
       "link": "https://www.youtube.com/watch?v=w6SJPW6vW6s&list=PLjqqSIyv0xOkFFrysRHU7yycdID97UwIK&index=1",
       "playlistId": "0.3282316317247287",
       "id": "0.17069915841737027"
