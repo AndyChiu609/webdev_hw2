@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -23,14 +23,11 @@ export default function PlaylistCard({
   onDelete,
 }: PlaylistCardProps) {
   const navigate = useNavigate();
-  const [songCount, setSongCount] = useState<number>(0);
-
+  const [songCount, setSongCount] = useState(0);
   // Function to fetch and count songs for the playlist
-  const fetchAndCountSongs = async () => {
+  const fetchAndCountSongs = useCallback(async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/songs?playlistId=${id}`,
-      );
+      const response = await fetch(`http://localhost:8000/api/playlists/${id}/songs`);
       if (response.ok) {
         const songs = await response.json();
         setSongCount(songs.length);
@@ -40,11 +37,11 @@ export default function PlaylistCard({
     } catch (error) {
       console.error("Error fetching songs:", error);
     }
-  };
+  }, [id]); // 'id' is the dependency here
 
   useEffect(() => {
     fetchAndCountSongs();
-  }, [id]);
+  }, [fetchAndCountSongs]);
 
   return (
     <Card sx={{ maxWidth: 345, position: "relative" }}>

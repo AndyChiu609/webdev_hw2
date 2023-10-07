@@ -1,5 +1,6 @@
 //import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import "./App.css"
 
 import HeadBar from "./component/HeadBar";
 import MainComponent from "./component/MainComponent"; // 確保這個路徑是正確的

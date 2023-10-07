@@ -26,11 +26,11 @@ export const getAllPlaylists = async (req: Request, res: Response) => {
 
 export const getPlaylistById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  
+
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "Invalid ID format" });
   }
-  
+
   try {
     const playlist = await Playlist.findById(id);
     if (!playlist) {
@@ -50,12 +50,12 @@ export const updatePlaylistById = async (req: Request, res: Response) => {
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "Invalid ID format" });
   }
-  
+
   try {
     const playlist = await Playlist.findByIdAndUpdate(
       id,
       { title, description },
-      { new: true }
+      { new: true },
     );
     if (!playlist) {
       return res.status(404).json({ error: "Playlist not found" });
@@ -73,7 +73,7 @@ export const deletePlaylistById = async (req: Request, res: Response) => {
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "Invalid ID format" });
   }
-  
+
   try {
     const playlist = await Playlist.findByIdAndRemove(id);
     if (!playlist) {
@@ -90,7 +90,6 @@ export const deletePlaylistById = async (req: Request, res: Response) => {
   }
 };
 
-
 export const createSongForPlaylist = async (req: Request, res: Response) => {
   const { playlistId } = req.params;
   const { songName, singer, link } = req.body;
@@ -98,7 +97,7 @@ export const createSongForPlaylist = async (req: Request, res: Response) => {
   if (!Types.ObjectId.isValid(playlistId)) {
     return res.status(400).json({ error: "Invalid playlist ID format" });
   }
-  
+
   try {
     const playlist = await Playlist.findById(playlistId);
     if (!playlist) {
@@ -120,7 +119,7 @@ export const getSongsForPlaylist = async (req: Request, res: Response) => {
   if (!Types.ObjectId.isValid(playlistId)) {
     return res.status(400).json({ error: "Invalid playlist ID format" });
   }
-  
+
   try {
     const songs = await Song.find({ playlistId });
     res.status(200).json(songs);
@@ -136,7 +135,7 @@ export const deleteSongById = async (req: Request, res: Response) => {
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "Invalid ID format" });
   }
-  
+
   try {
     const song = await Song.findByIdAndRemove(id);
     if (!song) {
@@ -163,7 +162,7 @@ export const updateSongById = async (req: Request, res: Response) => {
     console.log("Updated data:", songData);
 
     const song = await Song.findByIdAndUpdate(id, songData, { new: true });
-    
+
     if (!song) {
       console.error("Song not found with ID:", id);
       return res.status(404).json({ error: "Song not found" });
@@ -176,6 +175,3 @@ export const updateSongById = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to update song" });
   }
 };
-
-
-

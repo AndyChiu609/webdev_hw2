@@ -1,21 +1,21 @@
 import AddPlayListDialog from "./AddPlaylistDialog";
 import PlaylistCard from "./PlayListCard";
 import image from "../public/image.png";
+import "./main-component.css";
+
 
 import Typography from "@mui/material/Typography";
 import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
-import "../App.css";
 
-import axios from 'axios';
-import { AxiosError } from 'axios';
+import axios from "axios";
+import { AxiosError } from "axios";
 
 type playlist = {
   _id: string;
   title: string;
   description: string;
-  songs: any[];
 };
 
 function MainComponent() {
@@ -34,23 +34,25 @@ function MainComponent() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.delete(`http://localhost:8000/api/playlists/${id}`);
+      const response = await axios.delete(
+        `http://localhost:8000/api/playlists/${id}`,
+      );
       if (response.status === 204) {
-          setPlaylists((prev) => prev.filter((playlist) => playlist._id !== id));
+        setPlaylists((prev) => prev.filter((playlist) => playlist._id !== id));
       } else {
-          console.error("Error deleting playlist:", response.data.error);
+        console.error("Error deleting playlist:", response.data.error);
       }
     } catch (error) {
-      const axiosError = error as AxiosError;  // Type assertion
-  
+      const axiosError = error as AxiosError; // Type assertion
+
       console.error("Error deleting playlist:", axiosError.message);
-  
+
       if (axiosError.response && axiosError.response.data) {
-          console.error("Server response:", axiosError.response.data);
+        console.error("Server response:", axiosError.response.data);
       }
-  }
-};
-  
+    }
+  };
+
   useEffect(() => {
     fetchPlaylists();
   }, []);
@@ -87,17 +89,19 @@ function MainComponent() {
           </Button>
         </Box>
 
-        {playlists.map((playlist) => (
-          <PlaylistCard
-            key={playlist._id}
-            title={playlist.title}
-            description={playlist.description}
-            image={image}
-            id={playlist._id}
-            deleteMode={deleteMode}
-            onDelete={() => handleDelete(playlist._id)}
-          />
-        ))}
+        <div className="grid-wrapper">
+          {playlists.map((playlist) => (
+            <PlaylistCard
+              key={playlist._id}
+              title={playlist.title}
+              // description={playlist.description}
+              image={image}
+              id={playlist._id}
+              deleteMode={deleteMode}
+              onDelete={() => handleDelete(playlist._id)}
+            />
+          ))}
+        </div>
 
         <AddPlayListDialog
           open={dialogOpen}

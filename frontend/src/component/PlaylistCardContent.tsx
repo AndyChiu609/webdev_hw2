@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import axios from "axios";
+import "./playlistcardcontentcss.css";
 
 type Playlist = {
   _id: string;
@@ -32,7 +33,6 @@ export type Song = {
   link: string;
   playlistId: string;
 };
-
 
 function PlaylistCardContent() {
   const { id } = useParams<{ id: string }>();
@@ -88,10 +88,13 @@ function PlaylistCardContent() {
 
   const handleSaveEdit = async () => {
     try {
-      const response = await axios.put(`http://localhost:8000/api/playlists/${id}`, {
-        title: editedTitle,
-        description: editedDescription
-      });
+      const response = await axios.put(
+        `http://localhost:8000/api/playlists/${id}`,
+        {
+          title: editedTitle,
+          description: editedDescription,
+        },
+      );
 
       if (response.status === 200) {
         setPlaylist((prevPlaylist) => ({
@@ -111,7 +114,9 @@ function PlaylistCardContent() {
 
   const getSongsForPlaylist = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/playlists/${id}/songs`);
+      const response = await axios.get(
+        `http://localhost:8000/api/playlists/${id}/songs`,
+      );
 
       console.log("Fetched songs:", response.data);
       setSongs(response.data);
@@ -119,33 +124,35 @@ function PlaylistCardContent() {
       console.error("Error fetching songs:", error);
     }
   };
-  
-  
 
   const handleDeleteConfirmed = async () => {
     const failedDeletes: string[] = [];
 
     for (const song of selectedSongsForDeletion) {
-        try {
-            const response = await axios.delete(`http://localhost:8000/api/playlists/songs/${song._id}`);
-            if (response.status !== 204) { // Assuming 204 No Content is the response for a successful delete
-                failedDeletes.push(song._id);
-            }
-        } catch (error) {
-            console.error(`Error deleting song with ID ${song._id}:`, error);
-            failedDeletes.push(song._id);
+      try {
+        const response = await axios.delete(
+          `http://localhost:8000/api/playlists/songs/${song._id}`,
+        );
+        if (response.status !== 204) {
+          // Assuming 204 No Content is the response for a successful delete
+          failedDeletes.push(song._id);
         }
+      } catch (error) {
+        console.error(`Error deleting song with ID ${song._id}:`, error);
+        failedDeletes.push(song._id);
+      }
     }
 
     if (failedDeletes.length === 0) {
-        setSongs((prevSongs) => prevSongs.filter((song) => !selected.includes(song._id)));
-        setSelected([]);
-        handleDeleteDialogClose();
+      setSongs((prevSongs) =>
+        prevSongs.filter((song) => !selected.includes(song._id)),
+      );
+      setSelected([]);
+      handleDeleteDialogClose();
     } else {
-        console.error("Failed to delete some songs:", failedDeletes);
+      console.error("Failed to delete some songs:", failedDeletes);
     }
-};
-
+  };
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -167,7 +174,6 @@ function PlaylistCardContent() {
     }
   };
 
-
   const handleCopyToPlaylist = async () => {
     try {
       const failedCopies = [];
@@ -178,17 +184,19 @@ function PlaylistCardContent() {
           const copiedSong = {
             ...song,
             playlistId: selectedPlaylist,
-            id: String(Math.random()),
           };
 
           try {
-            const response = await fetch(`http://localhost:8000/api/songs`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
+            const response = await fetch(
+              `http://localhost:8000/api/playlists/${copiedSong.playlistId}/songs`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(copiedSong),
               },
-              body: JSON.stringify(copiedSong),
-            });
+            );
 
             if (!response.ok) {
               failedCopies.push(songId);
@@ -211,53 +219,54 @@ function PlaylistCardContent() {
   };
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/playlists/${id}`)
+    axios
+      .get(`http://localhost:8000/api/playlists/${id}`)
       .then((response) => {
         //console.log("Playlist Data:", response.data);
         setPlaylist(response.data);
       })
       .catch((error) => console.error("Error fetching playlist:", error));
 
-    axios.get(`http://localhost:8000/api/playlists/${id}/songs`) // <-- Update this URL
+    axios
+      .get(`http://localhost:8000/api/playlists/${id}/songs`) // <-- Update this URL
       .then((response) => {
         //console.log("Songs Data:", response.data); // Note: also update the console log message to better reflect the content
         setSongs(response.data);
       })
       .catch((error) => console.error("Error fetching songs:", error));
+  }, [id]);
 
-}, [id]);
-
-useEffect(() => {
-  axios.get('http://localhost:8000/api/playlists')
-    .then((response) => {
-      setPlaylists(response.data);
-    })
-    .catch((error) => console.error("Error fetching all playlists:", error));
-}, []);
-
-
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/playlists")
+      .then((response) => {
+        setPlaylists(response.data);
+      })
+      .catch((error) => console.error("Error fetching all playlists:", error));
+  }, []);
 
   if (!playlist) return <div>Loading...</div>;
 
   return (
     <div>
-      <img src={image} alt="" width={340} />
-      <Link to="/">
-        <HomeIcon color="primary" style={{ marginRight: "10px" }} />
-      </Link>
-      <Link to="/">返回播放列表</Link>
-      <h2>{playlist.title}</h2>
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "20px",
-        }}
-      >
-        <p>{playlist.description}</p>
+      <div className="style">
+        <Link to="/">
+          <HomeIcon color="primary" style={{ marginRight: "10px" }} />
+        </Link>
+        <Link to="/">返回播放列表</Link>
+      </div>
+      <div className="cover">
+        <img src={image} alt="" width={340} />
         <div>
+          <h2>{playlist.title}</h2>
+          <p>{playlist.description}</p>
+        </div>
+      </div>
+
+      <div className="button_group"
+
+      >
+        
           <Button
             variant="outlined"
             color="primary"
@@ -287,7 +296,7 @@ useEffect(() => {
           >
             Edit Title and Description
           </Button>
-        </div>
+        
       </div>
 
       <AddSongDialog

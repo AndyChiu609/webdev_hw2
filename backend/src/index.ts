@@ -11,8 +11,6 @@ app.use(cors());
 
 app.use("/api/playlists", playlistRoutes);
 
-
-
 app.get("/heartbeat", (_, res) => {
   return res.send({ message: "Hello World!" });
 });

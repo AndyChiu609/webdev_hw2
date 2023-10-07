@@ -1,0 +1,25 @@
+.grid-wrapper {
+  display: grid;
+  gap: 10px; /* 你可以调整间距大小 */
+}
+
+/* 大于等于 1024px 宽度时，设置 6 列 */
+@media screen and (min-width: 1024px) {
+  .grid-wrapper {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* 在 720px 到 1023px 之间，设置 4 列 */
+@media screen and (min-width: 720px) and (max-width: 1023px) {
+  .grid-wrapper {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 在 719px 及以下宽度时，设置 1 列 */
+@media screen and (max-width: 719px) {
+  .grid-wrapper {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

@@ -8,6 +8,12 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios"; // Import Axios
 
+type Playlist = {
+  _id: string;
+  title: string;
+  description: string;
+};
+
 type FormDialogProps = {
   open: boolean;
   handleClose: () => void;
@@ -44,12 +50,12 @@ export default function FormDialog({
       const playlists = response.data;
 
       const titleExists = playlists.some(
-        (playlist: any) => playlist.title === title
+        (playlist: Playlist) => playlist.title === title
       );
 
       if (titleExists) {
         alert(
-          "A playlist with this title already exists. Please choose a different title."
+          "A playlist with this title already exists. Please choose a different title.",
         );
         return;
       }
@@ -66,7 +72,10 @@ export default function FormDialog({
 
     try {
       // Use Axios to send a POST request
-      const response = await axios.post("http://localhost:8000/api/playlists", newPlaylist);
+      const response = await axios.post(
+        "http://localhost:8000/api/playlists",
+        newPlaylist,
+      );
       console.log(response.data);
       handleClose();
       onCreate();
