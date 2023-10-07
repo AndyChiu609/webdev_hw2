@@ -29,7 +29,7 @@ export default function PlaylistCard({
   const fetchAndCountSongs = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/songs?playlistId=${id}`,
+        `http://localhost:8000/songs?playlistId=${id}`,
       );
       if (response.ok) {
         const songs = await response.json();

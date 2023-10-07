@@ -17,19 +17,22 @@ import {
   TextField,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import axios from "axios";
 
 type Playlist = {
-  id: string;
+  _id: string;
   title: string;
   description: string;
 };
 
 export type Song = {
-  id: string;
+  _id: string;
   songName: string;
   singer: string;
   link: string;
+  playlistId: string;
 };
+
 
 function PlaylistCardContent() {
   const { id } = useParams<{ id: string }>();
@@ -72,7 +75,7 @@ function PlaylistCardContent() {
   const handleDeleteSelectedSongs = async () => {
     if (selected.length > 0) {
       const selectedSongsArray = songs.filter((song) =>
-        selected.includes(song.id),
+        selected.includes(song._id),
       );
       setSelectedSongsForDeletion(selectedSongsArray);
       setDeleteDialogOpen(true);
@@ -85,23 +88,17 @@ function PlaylistCardContent() {
 
   const handleSaveEdit = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/playlists/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: editedTitle,
-          description: editedDescription,
-        }),
+      const response = await axios.put(`http://localhost:8000/api/playlists/${id}`, {
+        title: editedTitle,
+        description: editedDescription
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         setPlaylist((prevPlaylist) => ({
           ...prevPlaylist!,
           title: editedTitle,
           description: editedDescription,
-          id: prevPlaylist?.id || "",
+          id: prevPlaylist?._id || "",
         }));
         handleEditDialogClose();
       } else {
@@ -112,39 +109,47 @@ function PlaylistCardContent() {
     }
   };
 
+  const getSongsForPlaylist = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/playlists/${id}/songs`);
+
+      console.log("Fetched songs:", response.data);
+      setSongs(response.data);
+    } catch (error) {
+      console.error("Error fetching songs:", error);
+    }
+  };
+  
+  
+
   const handleDeleteConfirmed = async () => {
     const failedDeletes: string[] = [];
 
-    for (const songId of selected) {
-      try {
-        const response = await fetch(`http://localhost:5000/songs/${songId}`, {
-          method: "DELETE",
-        });
-        getSongsForPlaylist();
-
-        if (!response.ok) {
-          failedDeletes.push(songId);
+    for (const song of selectedSongsForDeletion) {
+        try {
+            const response = await axios.delete(`http://localhost:8000/api/playlists/songs/${song._id}`);
+            if (response.status !== 204) { // Assuming 204 No Content is the response for a successful delete
+                failedDeletes.push(song._id);
+            }
+        } catch (error) {
+            console.error(`Error deleting song with ID ${song._id}:`, error);
+            failedDeletes.push(song._id);
         }
-      } catch (error) {
-        console.error("Error deleting song:", error);
-        failedDeletes.push(songId);
-      }
     }
 
     if (failedDeletes.length === 0) {
-      setSongs((prevSongs) =>
-        prevSongs.filter((song) => !selected.includes(song.id)),
-      );
-      setSelected([]);
-      handleDeleteDialogClose();
+        setSongs((prevSongs) => prevSongs.filter((song) => !selected.includes(song._id)));
+        setSelected([]);
+        handleDeleteDialogClose();
     } else {
-      console.error("Failed to delete some songs:", failedDeletes);
+        console.error("Failed to delete some songs:", failedDeletes);
     }
-  };
+};
+
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = songs.map((n) => n.id);
+      const newSelected = songs.map((n) => n._id);
       setSelected(newSelected);
     } else {
       setSelected([]);
@@ -162,24 +167,13 @@ function PlaylistCardContent() {
     }
   };
 
-  const getSongsForPlaylist = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:5000/songs?playlistId=${id}`,
-      );
-      const songsData = await response.json();
-      setSongs(songsData);
-    } catch (error) {
-      console.error("Error fetching songs:", error);
-    }
-  };
 
   const handleCopyToPlaylist = async () => {
     try {
       const failedCopies = [];
 
       for (const songId of selected) {
-        const song = songs.find((s) => s.id === songId);
+        const song = songs.find((s) => s._id === songId);
         if (song) {
           const copiedSong = {
             ...song,
@@ -188,7 +182,7 @@ function PlaylistCardContent() {
           };
 
           try {
-            const response = await fetch(`http://localhost:5000/songs`, {
+            const response = await fetch(`http://localhost:8000/api/songs`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -217,18 +211,31 @@ function PlaylistCardContent() {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:5000/playlists/${id}`)
-      .then((response) => response.json())
-      .then((data) => setPlaylist(data))
+    axios.get(`http://localhost:8000/api/playlists/${id}`)
+      .then((response) => {
+        //console.log("Playlist Data:", response.data);
+        setPlaylist(response.data);
+      })
       .catch((error) => console.error("Error fetching playlist:", error));
 
-    getSongsForPlaylist();
+    axios.get(`http://localhost:8000/api/playlists/${id}/songs`) // <-- Update this URL
+      .then((response) => {
+        //console.log("Songs Data:", response.data); // Note: also update the console log message to better reflect the content
+        setSongs(response.data);
+      })
+      .catch((error) => console.error("Error fetching songs:", error));
 
-    fetch("http://localhost:5000/playlists")
-      .then((response) => response.json())
-      .then((data) => setPlaylists(data))
-      .catch((error) => console.error("Error fetching playlists:", error));
-  }, [id]);
+}, [id]);
+
+useEffect(() => {
+  axios.get('http://localhost:8000/api/playlists')
+    .then((response) => {
+      setPlaylists(response.data);
+    })
+    .catch((error) => console.error("Error fetching all playlists:", error));
+}, []);
+
+
 
   if (!playlist) return <div>Loading...</div>;
 
@@ -300,7 +307,7 @@ function PlaylistCardContent() {
               onChange={(e) => setSelectedPlaylist(e.target.value as string)}
             >
               {playlists.map((playlist) => (
-                <MenuItem key={playlist.title} value={playlist.id}>
+                <MenuItem key={playlist.title} value={playlist._id}>
                   {playlist.title}
                 </MenuItem>
               ))}

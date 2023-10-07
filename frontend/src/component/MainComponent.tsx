@@ -8,23 +8,25 @@ import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
 import "../App.css";
 
+import axios from 'axios';
+import { AxiosError } from 'axios';
+
 type playlist = {
-  id: string;
+  _id: string;
   title: string;
   description: string;
-  songs: any[]; // change this if you have a specific structure in mind
+  songs: any[];
 };
 
 function MainComponent() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
-  const [playlists, setPlaylists] = useState<playlist[]>([]); // 用於存儲播放列表的 state
+  const [playlists, setPlaylists] = useState<playlist[]>([]);
 
   const fetchPlaylists = async () => {
     try {
-      const response = await fetch("http://localhost:5000/playlists");
-      const data = await response.json();
-      setPlaylists(data);
+      const response = await axios.get("http://localhost:8000/api/playlists");
+      setPlaylists(response.data);
     } catch (error) {
       console.error("Error fetching playlists:", error);
     }
@@ -32,25 +34,26 @@ function MainComponent() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/playlists/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        // Instead of fetching the entire list again, remove the deleted item from the state.
-        setPlaylists((prev) => prev.filter((playlist) => playlist.id !== id));
+      const response = await axios.delete(`http://localhost:8000/api/playlists/${id}`);
+      if (response.status === 204) {
+          setPlaylists((prev) => prev.filter((playlist) => playlist._id !== id));
       } else {
-        console.error("Error deleting playlist:", await response.text());
+          console.error("Error deleting playlist:", response.data.error);
       }
     } catch (error) {
-      console.error("Error deleting playlist:", error);
-    }
-  };
-
+      const axiosError = error as AxiosError;  // Type assertion
+  
+      console.error("Error deleting playlist:", axiosError.message);
+  
+      if (axiosError.response && axiosError.response.data) {
+          console.error("Server response:", axiosError.response.data);
+      }
+  }
+};
+  
   useEffect(() => {
-    // 獲取播放列表的函數
     fetchPlaylists();
-  }, []); // 這個空的依賴列表確保 fetchPlaylists 只在組件初次渲染時運行
+  }, []);
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
@@ -59,6 +62,8 @@ function MainComponent() {
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
+
+  console.log(playlists);
 
   return (
     <>
@@ -84,13 +89,13 @@ function MainComponent() {
 
         {playlists.map((playlist) => (
           <PlaylistCard
-            key={playlist.id}
+            key={playlist._id}
             title={playlist.title}
             description={playlist.description}
             image={image}
-            id={playlist.id}
+            id={playlist._id}
             deleteMode={deleteMode}
-            onDelete={() => handleDelete(playlist.id)}
+            onDelete={() => handleDelete(playlist._id)}
           />
         ))}
 

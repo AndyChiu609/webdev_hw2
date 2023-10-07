@@ -29,7 +29,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
           確定要删除以下歌曲嗎？
           <ul>
             {selectedSongs.map((song) => (
-              <li key={song.id}>
+              <li key={song._id}>
                 歌名{song.songName} - 歌手{song.singer} - 歌曲連結{song.link}
               </li>
             ))}

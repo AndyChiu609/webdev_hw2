@@ -15,12 +15,14 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+import axios from "axios";
 
 type Song = {
-  id: string;
+  _id: string;
   songName: string;
   singer: string;
   link: string;
+  playlistId: string;
 };
 
 type SongsTableProps = {
@@ -53,22 +55,53 @@ const SongsTable: React.FC<SongsTableProps> = ({
 
   const handleSaveEdit = async () => {
     if (editingSong) {
-      await fetch(`http://localhost:5000/songs/${editingSong.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editingSong),
-      });
-      closeEditDialog();
-
-      if (onSongsUpdated) {
-        onSongsUpdated();
+      try {
+        console.log(editingSong._id);
+        const response = await axios.put(
+          `http://localhost:8000/api/songs/${editingSong._id}`,
+          editingSong
+        );
+  
+        // Check if the response has any data or specific messages
+        if (response.data) {
+          console.log("Response data:", response.data);
+        }
+  
+        // Close the edit dialog
+        closeEditDialog();
+  
+        // If provided, call the onSongsUpdated callback to refresh the songs
+        if (onSongsUpdated) {
+          onSongsUpdated();
+        }
+      } catch (error) {
+        console.error("Error updating song:", error);
+  
+        if (error instanceof Error) {
+          console.error("Error message:", error.message);
+        } else if (axios.isAxiosError(error)) {
+          console.error("Axios error:", error);
+  
+          if (error.response) {
+            console.error("Error status:", error.response.status);
+            console.error("Error data:", error.response.data);
+            console.error("Error headers:", error.response.headers);
+          } else if (error.request) {
+            console.error("No response received:", error.request);
+          }
+        } else {
+          console.error("Unknown error:", error);
+        }
+  
+        alert("Failed to update the song. Check the console for more details.");
       }
     }
   };
+  
+  
 
-  const isSongSelected = (songId: string) => selected.indexOf(songId) !== -1;
+
+  
 
   return (
     <>
@@ -94,12 +127,15 @@ const SongsTable: React.FC<SongsTableProps> = ({
           </TableHead>
           <TableBody>
             {songs.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row._id}>
                 <TableCell padding="checkbox">
                   <Checkbox
                     color="primary"
-                    checked={isSongSelected(row.id)}
-                    onChange={(e) => handleSingleSelect(e, row.id)}
+                    checked={selected.includes(row._id)}
+                    onChange={(e) => {
+                      // Handle single select
+                      handleSingleSelect(e, row._id);
+                    }}
                   />
                 </TableCell>
                 <TableCell>{row.songName}</TableCell>

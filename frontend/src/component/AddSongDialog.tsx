@@ -1,5 +1,6 @@
 // AddSongDialog.tsx
-
+import axios from "axios";
+import { AxiosError } from 'axios';
 import React, { useState } from "react";
 import {
   Dialog,
@@ -35,45 +36,52 @@ const AddSongDialog: React.FC<AddSongDialogProps> = ({
       setNewSongData((prev) => ({ ...prev, [field]: event.target.value }));
     };
 
-  const handleSaveNewSong = async () => {
-    if (newSongData.songName && newSongData.singer && newSongData.link) {
-      try {
-        // Fetch existing songs with the same name
-        const response = await fetch(
-          `http://localhost:5000/songs?songName=${newSongData.songName}`,
-        );
-        const existingSongs = await response.json();
-
-        if (existingSongs.length > 0) {
-          // A song with the same name already exists
-          alert(
-            "A song with the same name already exists. Please choose a different song name.",
-          );
-        } else {
-          // No song with the same name exists, proceed to create the new song
-          await fetch("http://localhost:5000/songs", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...newSongData,
-              playlistId: playlistId, // Include the playlistId here
-            }),
-          });
-
-          onClose();
-          onSongAdded();
-        }
-      } catch (error) {
-        console.error("Error checking existing songs:", error);
-        // Handle error (e.g., show an error message)
+    const handleSaveNewSong = async () => {
+      if (newSongData.songName && newSongData.singer && newSongData.link) {
+          try {
+              // Fetch all songs for the current playlist
+              const response = await axios.get(
+                  `http://localhost:8000/api/playlists/${playlistId}/songs`
+              );
+              const existingSongs = response.data;
+  
+              // Check if a song with the given name already exists in the playlist
+              const songExists = existingSongs.some(
+                (song: { songName: string }) => song.songName === newSongData.songName
+            );
+  
+              if (songExists) {
+                  alert(
+                      "A song with the same name already exists in this playlist. Please choose a different song name."
+                  );
+              } else {
+                  // No song with the same name exists in the current playlist, proceed to create the new song
+                  await axios.post(`http://localhost:8000/api/playlists/${playlistId}/songs`, newSongData);
+  
+                  onClose();
+                  onSongAdded();
+              }
+          } catch (error) {
+              const axiosError = error as AxiosError;
+  
+              if (axiosError.response) {
+                  console.error("Data:", axiosError.response.data);
+                  console.error("Status:", axiosError.response.status);
+                  console.error("Headers:", axiosError.response.headers);
+              } else if (axiosError.request) {
+                  console.error("No response received:", axiosError.request);
+              } else {
+                  console.error("Error setting up the request", axiosError.message);
+              }
+  
+              alert("Error occurred while adding the song. Please try again.");
+          }
+      } else {
+          alert("Entering Song Name, Singer and link is a MUST!");
       }
-    } else {
-      alert("Entering Song Name, Singer and link is a MUST!");
-      // Handle error (e.g., show a notification that all fields are required)
-    }
   };
+  
+    
 
   return (
     <Dialog open={isOpen} onClose={onClose}>

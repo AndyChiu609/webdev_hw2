@@ -6,10 +6,9 @@
       "id": "0.3282316317247287"
     },
     {
-      "id": "0.6179781627441854",
-      "title": "2",
-      "description": "2",
-      "songs": []
+      "title": "oil song copy",
+      "description": "copy songs from oil song",
+      "id": "0.6179781627441854"
     }
   ],
   "songs": [
@@ -21,18 +20,25 @@
       "id": "0.17069915841737027"
     },
     {
-      "songName": "GIVE ME CHOCO♡",
-      "singer": "檔案的歌手",
-      "link": "https://www.youtube.com/watch?v=w6SJPW6vW6s&list=PLjqqSIyv0xOkFFrysRHU7yycdID97UwIK&index=1",
-      "playlistId": "0.6179781627441854",
-      "id": "0.46695975984844273"
+      "songName": "specialz",
+      "singer": "kingnu",
+      "link": "https://www.youtube.com/watch?v=fhzKLBZJC3w",
+      "playlistId": "0.3282316317247287",
+      "id": "C-bW-3r"
     },
     {
-      "songName": "special",
+      "songName": "blue archive song",
+      "singer": "some cute edm singer",
+      "link": "https://www.youtube.com/watch?v=w6SJPW6vW6s&list=PLjqqSIyv0xOkFFrysRHU7yycdID97UwIK&index=1",
+      "playlistId": "0.6179781627441854",
+      "id": "0.21684929094040428"
+    },
+    {
+      "songName": "specialz",
       "singer": "kingnu",
       "link": "https://www.youtube.com/watch?v=fhzKLBZJC3w",
       "playlistId": "0.6179781627441854",
-      "id": "0.9319267348274218"
+      "id": "0.2362500460160586"
     }
   ]
 }
