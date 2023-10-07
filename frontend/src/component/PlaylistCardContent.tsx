@@ -268,8 +268,8 @@ function PlaylistCardContent() {
       >
         
           <Button
-            variant="outlined"
-            color="primary"
+            variant="contained"
+            color="secondary"
             onClick={handleAddDialogOpen}
           >
             Add Song
@@ -290,8 +290,8 @@ function PlaylistCardContent() {
             Delete Selected Songs
           </Button>
           <Button
-            variant="outlined"
-            color="primary"
+            variant="contained"
+            color="secondary"
             onClick={handleEditDialogOpen}
           >
             Edit Title and Description
