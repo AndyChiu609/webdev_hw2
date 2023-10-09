@@ -50,7 +50,7 @@ export default function FormDialog({
       const playlists = response.data;
 
       const titleExists = playlists.some(
-        (playlist: Playlist) => playlist.title === title
+        (playlist: Playlist) => playlist.title === title,
       );
 
       if (titleExists) {

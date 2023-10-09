@@ -43,21 +43,20 @@ button:not(:last-child) {
     margin-right: 10px;
 } */
 
-.cover{
-    display: flex;
-    gap: 16px;
+.cover {
+  display: flex;
+  gap: 16px;
 }
 
-.button_group{
-    display: flex;
-    flex-direction: row;
-    align-items:center;
-    gap: 20px;
-    margin: 16px;
-    justify-content: flex-end;
+.button_group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  margin: 16px;
+  justify-content: flex-end;
 }
 
-.style{
-
-    padding: 10px;
+.style {
+  padding: 10px;
 }

@@ -263,40 +263,36 @@ function PlaylistCardContent() {
         </div>
       </div>
 
-      <div className="button_group"
-
-      >
-        
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleAddDialogOpen}
-          >
-            Add Song
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleCopyDialogOpen}
-            disabled={selected.length === 0}
-          >
-            Copy to Other Playlist
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleDeleteSelectedSongs}
-          >
-            Delete Selected Songs
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleEditDialogOpen}
-          >
-            Edit Title and Description
-          </Button>
-        
+      <div className="button_group">
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleAddDialogOpen}
+        >
+          Add Song
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleCopyDialogOpen}
+          disabled={selected.length === 0}
+        >
+          Copy to Other Playlist
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleDeleteSelectedSongs}
+        >
+          Delete Selected Songs
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleEditDialogOpen}
+        >
+          Edit Title and Description
+        </Button>
       </div>
 
       <AddSongDialog

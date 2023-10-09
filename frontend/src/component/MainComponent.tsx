@@ -3,7 +3,6 @@ import PlaylistCard from "./PlayListCard";
 import image from "../public/image.png";
 import "./main-component.css";
 
-
 import Typography from "@mui/material/Typography";
 import { Button } from "@mui/material";
 import Box from "@mui/material/Box";

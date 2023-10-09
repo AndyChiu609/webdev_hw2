@@ -1,4 +1,3 @@
-import express from "express";
 import {
   createPlaylist,
   getAllPlaylists,
@@ -9,7 +8,10 @@ import {
   getSongsForPlaylist,
   deleteSongById,
   updateSongById,
-} from "../controllers/playlistControler"; // Import your controller functions
+} from "../controllers/playlistControler";
+import express from "express";
+
+// Import your controller functions
 
 const router = express.Router();
 
