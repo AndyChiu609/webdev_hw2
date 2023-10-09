@@ -33,12 +33,14 @@ export default function FormDialog({
   const handleCreate = async () => {
     if (!title) {
       setTitleErr(true);
+      alert("請輸入標題");
       return;
     } else {
       setTitleErr(false);
     }
     if (!description) {
       setDescriptionErr(true);
+      alert("請輸入說明");
       return;
     } else {
       setDescriptionErr(false);
